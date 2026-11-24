@@ -1,6 +1,40 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "ignoreDeps": [
+    "nobbe/ignis"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "obsidian-headless version installed in the add-on image",
+      "managerFilePatterns": [
+        "/^ignis/Dockerfile$/"
+      ],
+      "matchStrings": [
+        "ARG OBSIDIAN_HEADLESS_VERSION=(?<currentValue>[^\\s]+)"
+      ],
+      "depNameTemplate": "obsidian-headless",
+      "datasourceTemplate": "npm"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Automerge non-major GitHub Actions updates once CI passes",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest",
+        "pin",
+        "pinDigest"
+      ],
+      "automerge": true
+    }
   ]
 }
