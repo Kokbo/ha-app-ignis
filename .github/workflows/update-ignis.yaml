@@ -25,7 +25,7 @@ jobs:
       branch: ${{ steps.push.outputs.branch }}
       sha: ${{ steps.push.outputs.sha }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: main
 
@@ -73,7 +73,7 @@ jobs:
     if: needs.bump.outputs.updated == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: main
           fetch-depth: 0
