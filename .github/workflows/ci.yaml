@@ -33,7 +33,7 @@ jobs:
           ref: ${{ inputs.ref }}
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 26
       - run: bash -n ignis/rootfs/run.sh
       - name: Option parser quotes values safely
         run: |
