@@ -1,0 +1,4 @@
+# Always use LF line endings, also in Windows checkouts. The scripts and the
+# Dockerfile run on Linux; CRLF would break run.sh in a locally built image.
+* text=auto eol=lf
+*.png binary
