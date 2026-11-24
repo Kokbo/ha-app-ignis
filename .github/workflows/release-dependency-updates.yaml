@@ -1,0 +1,38 @@
+name: Release dependency updates
+
+# Home Assistant only rebuilds the app when the version in ignis/config.yaml changes.
+# When a Renovate pull request that changes the image (anything under ignis/) is
+# merged, this bumps the version (0.9.0 -> 0.9.0.1) and adds a changelog entry, so
+# users actually get the update. See .github/scripts/release-dependency-update.sh.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ignis/**"
+
+permissions: {}
+
+# Shared with "Update Ignis": both push version bumps to main.
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # push the version bump to main
+      pull-requests: read # find the pull request the commit came from
+    steps:
+      # Credentials are kept on purpose: the job pushes with git.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 # zizmor: ignore[artipacked]
+        with:
+          ref: main
+
+      - name: Bump the version if this came from a Renovate pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: bash .github/scripts/release-dependency-update.sh

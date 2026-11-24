@@ -40,6 +40,25 @@ jobs:
         with:
           node-version: 26
       - run: bash -n ignis/rootfs/run.sh
+      - name: Version scripts handle dependency-update versions
+        env:
+          GITHUB_OUTPUT: ""
+        run: |
+          set -euo pipefail
+          t="$(mktemp -d)"
+          mkdir -p "$t/ignis"
+          cp ignis/Dockerfile ignis/config.yaml ignis/CHANGELOG.md "$t/ignis/"
+          ignis="$(sed -n 's#^ARG BUILD_FROM=nobbe/ignis:\(.*\)$#\1#p' ignis/Dockerfile)"
+          # Two dependency updates: <ignis> -> <ignis>.1 -> <ignis>.2
+          test "$(ROOT="$t" bash .github/scripts/bump-addon-version.sh first)" = "${ignis}.1"
+          test "$(ROOT="$t" bash .github/scripts/bump-addon-version.sh second)" = "${ignis}.2"
+          # A new Ignis release replaces the suffixed version.
+          printf '{"results":[{"name":"99.0.0","images":[{"architecture":"amd64"},{"architecture":"arm64"}]}]}' > "$t/tags.json"
+          printf 'v%s+obsidian.1.0.0\nv99.0.0+obsidian.9.9.9\n' "$ignis" > "$t/upstream-tags"
+          ROOT="$t" DOCKERHUB_TAGS_JSON="$t/tags.json" UPSTREAM_TAGS="$t/upstream-tags" \
+            bash .github/scripts/update-ignis.sh
+          grep -qxF 'version: "99.0.0"' "$t/ignis/config.yaml"
+          grep -qxF 'ARG BUILD_FROM=nobbe/ignis:99.0.0' "$t/ignis/Dockerfile"
       - name: Option parser quotes values safely
         run: |
           printf '%s' '{"vault_root":"/share/obsidian/","write_coalesce_ms":0,"ws_origins":[],"proxy_allow_private_hosts":["10.0.0.0/8"],"ignored_paths":["a'"'"'b; echo pwned"]}' > /tmp/options.json

@@ -70,7 +70,9 @@ fi
 out obsidian "$obsidian"
 
 sed -i "s#^ARG BUILD_FROM=nobbe/ignis:${current}\$#ARG BUILD_FROM=nobbe/ignis:${latest}#" "$ROOT/ignis/Dockerfile"
-sed -i "s#^version: \"${current}\"\$#version: \"${latest}\"#" "$ROOT/ignis/config.yaml"
+# The app version may carry a dependency-update suffix (0.9.0.2, see
+# bump-addon-version.sh); a new Ignis release replaces it with the plain version.
+sed -i -E "s#^version: \"${current//./\\.}(\\.[0-9]+)?\"\$#version: \"${latest}\"#" "$ROOT/ignis/config.yaml"
 
 grep -qxF "ARG BUILD_FROM=nobbe/ignis:${latest}" "$ROOT/ignis/Dockerfile"
 grep -qxF "version: \"${latest}\"" "$ROOT/ignis/config.yaml"
