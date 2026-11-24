@@ -9,7 +9,7 @@ FROM ${BUILD_FROM}
 LABEL \
     org.opencontainers.image.title="Home Assistant App: Ignis (Obsidian)" \
     org.opencontainers.image.description="Obsidian in the browser, with your vaults stored on Home Assistant" \
-    org.opencontainers.image.source="https://github.com/Kokbo/ha-addon-ignis" \
+    org.opencontainers.image.source="https://github.com/Kokbo/ha-app-ignis" \
     org.opencontainers.image.licenses="AGPL-3.0-only"
 
 ARG OBSIDIAN_HEADLESS_VERSION=0.0.14
