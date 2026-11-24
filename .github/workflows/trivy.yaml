@@ -1,0 +1,84 @@
+name: Trivy
+
+# Scans the built add-on image (nobbe/ignis base + obsidian-headless) for known
+# vulnerabilities, and the Dockerfile for misconfigurations. Results go to
+# Security -> Code scanning. This never fails: almost everything it finds comes
+# from the upstream image, which only a newer Ignis release can fix.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ignis/**"
+      - ".github/workflows/trivy.yaml"
+  # Shows new findings on PRs, e.g. a Renovate bump of obsidian-headless.
+  pull_request:
+    paths:
+      - "ignis/**"
+      - ".github/workflows/trivy.yaml"
+  # Daily, after Update Ignis (04:23). Its pushes to main use GITHUB_TOKEN, which
+  # does not trigger the push event above, and new CVEs appear between releases.
+  schedule:
+    - cron: "41 6 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # upload SARIF results
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      # amd64 only: both architectures install the same packages.
+      - name: Build add-on image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ./ignis
+          platforms: linux/amd64
+          build-args: BUILD_ARCH=amd64
+          push: false
+          load: true
+          tags: ignis-addon:scan
+
+      - name: Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: image
+          image-ref: ignis-addon:scan
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
+          limit-severities-for-sarif: true
+          format: sarif
+          output: trivy-image.sarif
+          exit-code: "0"
+
+      - name: Scan Dockerfile for misconfigurations
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: config
+          scan-ref: ./ignis
+          severity: HIGH,CRITICAL
+          limit-severities-for-sarif: true
+          format: sarif
+          output: trivy-config.sarif
+          exit-code: "0"
+          skip-setup-trivy: true
+
+      - name: Upload image results
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          sarif_file: trivy-image.sarif
+          category: trivy-image
+
+      - name: Upload Dockerfile results
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          sarif_file: trivy-config.sarif
+          category: trivy-config

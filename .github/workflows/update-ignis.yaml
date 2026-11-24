@@ -9,8 +9,8 @@ on:
     - cron: "23 4 * * *"
   workflow_dispatch:
 
-permissions:
-  contents: write
+# No permissions by default; each job asks only for what it needs.
+permissions: {}
 
 concurrency:
   group: update-ignis
@@ -19,13 +19,16 @@ concurrency:
 jobs:
   bump:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the update-ignis-<version> branch
     outputs:
       updated: ${{ steps.push.outputs.updated }}
       latest: ${{ steps.bump.outputs.latest }}
       branch: ${{ steps.push.outputs.branch }}
       sha: ${{ steps.push.outputs.sha }}
     steps:
-      - uses: actions/checkout@v7
+      # Credentials are kept on purpose: the job pushes with git.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 # zizmor: ignore[artipacked]
         with:
           ref: main
 
@@ -64,6 +67,8 @@ jobs:
   test:
     needs: bump
     if: needs.bump.outputs.updated == 'true'
+    permissions:
+      contents: read
     uses: ./.github/workflows/ci.yaml
     with:
       ref: ${{ needs.bump.outputs.sha }}
@@ -72,8 +77,11 @@ jobs:
     needs: [bump, test]
     if: needs.bump.outputs.updated == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the tested commit to main and delete the test branch
     steps:
-      - uses: actions/checkout@v7
+      # Credentials are kept on purpose: the job pushes with git.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 # zizmor: ignore[artipacked]
         with:
           ref: main
           fetch-depth: 0
