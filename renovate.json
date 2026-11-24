@@ -2,8 +2,11 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    "helpers:pinGitHubActionDigests"
+    "helpers:pinGitHubActionDigests",
+    "schedule:weekly"
   ],
+  "minimumReleaseAge": "3 days",
+  "platformAutomerge": false,
   "ignoreDeps": [
     "nobbe/ignis"
   ],
@@ -19,13 +22,38 @@
       ],
       "depNameTemplate": "obsidian-headless",
       "datasourceTemplate": "npm"
+    },
+    {
+      "customType": "regex",
+      "description": "Linter images in workflows, marked with a '# renovate:' comment",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/[^/]+\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)\\s+[A-Z_]+_IMAGE: [^\\s]+?:(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]{64})"
+      ]
     }
   ],
   "packageRules": [
     {
-      "description": "Automerge non-major GitHub Actions updates once CI passes",
+      "description": "One weekly PR for CI tooling: GitHub Actions and the linter images",
       "matchManagers": [
-        "github-actions"
+        "github-actions",
+        "custom.regex"
+      ],
+      "matchDepNames": [
+        "!obsidian-headless"
+      ],
+      "groupName": "CI tooling"
+    },
+    {
+      "description": "Automerge non-major CI tooling updates once CI passes",
+      "matchManagers": [
+        "github-actions",
+        "custom.regex"
+      ],
+      "matchDepNames": [
+        "!obsidian-headless"
       ],
       "matchUpdateTypes": [
         "minor",

@@ -2,7 +2,7 @@ name: Ignis (Obsidian)
 version: "0.9.0"
 slug: ignis
 description: Obsidian in the browser, with your vaults stored on Home Assistant
-url: https://github.com/Kokbo/ha-addon-ignis
+url: https://github.com/Kokbo/ha-app-ignis
 arch:
   - aarch64
   - amd64

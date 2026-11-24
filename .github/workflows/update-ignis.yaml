@@ -20,6 +20,7 @@ concurrency:
 jobs:
   bump:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write # push the update-ignis-<version> branch
     outputs:
@@ -78,6 +79,7 @@ jobs:
     needs: [bump, test]
     if: needs.bump.outputs.updated == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write # push the tested commit to main and delete the test branch
     steps:

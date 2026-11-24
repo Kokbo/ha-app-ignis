@@ -9,7 +9,7 @@ FROM ${BUILD_FROM}
 LABEL \
     org.opencontainers.image.title="Home Assistant App: Ignis (Obsidian)" \
     org.opencontainers.image.description="Obsidian in the browser, with your vaults stored on Home Assistant" \
-    org.opencontainers.image.source="https://github.com/Kokbo/ha-addon-ignis" \
+    org.opencontainers.image.source="https://github.com/Kokbo/ha-app-ignis" \
     org.opencontainers.image.licenses="AGPL-3.0-only"
 
 ARG OBSIDIAN_HEADLESS_VERSION=0.0.14
@@ -29,6 +29,8 @@ ENV DATA_ROOT=/data/ignis \
 # Point the upstream entrypoint at the /data paths above. The grep checks make the
 # build fail if a new upstream release changes these lines, instead of silently
 # falling back to non-persistent paths.
+# The single quotes are deliberate: sed must write the literal $VARS into the script.
+# hadolint ignore=SC2016
 RUN sed -i \
         -e 's#^OBSIDIAN_DIR="/app/obsidian-app"$#OBSIDIAN_DIR="${OBSIDIAN_ASSETS_PATH:-/app/obsidian-app}"#' \
         -e 's#^mkdir -p /app/data$#mkdir -p "$DATA_ROOT" "$VAULT_ROOT"#' \
@@ -46,6 +48,8 @@ RUN npm install -g --prefix /usr/local "obsidian-headless@${OBSIDIAN_HEADLESS_VE
 COPY rootfs/ /
 RUN chmod 0755 /run.sh
 
+# Shell form on purpose, for the "|| exit 1".
+# hadolint ignore=DL3025
 HEALTHCHECK --interval=60s --timeout=5s --start-period=120s \
     CMD curl -fsS -o /dev/null http://127.0.0.1:8080/api/version || exit 1
 

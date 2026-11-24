@@ -9,12 +9,12 @@ Run [Ignis](https://github.com/Nystik-gh/ignis) on Home Assistant: the real Obsi
 app in a browser tab, with your vaults stored in `/share/obsidian`. (Home Assistant
 called apps "add-ons" before 2026.2.)
 
-[![Open your Home Assistant instance and show the add app repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FKokbo%2Fha-addon-ignis)
+[![Open your Home Assistant instance and show the add app repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FKokbo%2Fha-app-ignis)
 
 ## Install in Home Assistant
 
 1. Click the button above, or go to **Settings → Apps → App store → ⋮ → Repositories** and add
-   `https://github.com/Kokbo/ha-addon-ignis`.
+   `https://github.com/Kokbo/ha-app-ignis`.
 2. Install **Ignis (Obsidian)**. The image is built on your machine from the official
    multi-arch `nobbe/ignis` image (a few minutes).
 3. Start it and click **Open web UI**. The first start downloads Obsidian (a minute or
@@ -73,8 +73,8 @@ Ignis is made by [Nystik-gh](https://github.com/Nystik-gh/ignis) and licensed un
 AGPL-3.0. Obsidian is made by Dynalist Inc. and is downloaded from its official
 releases; it is not included in this repository.
 
-[ci-badge]: https://github.com/Kokbo/ha-addon-ignis/actions/workflows/ci.yaml/badge.svg
-[ci-url]: https://github.com/Kokbo/ha-addon-ignis/actions/workflows/ci.yaml
-[version-badge]: https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2FKokbo%2Fha-addon-ignis%2Fmain%2Fignis%2Fconfig.yaml&query=%24.version&label=ignis
+[ci-badge]: https://github.com/Kokbo/ha-app-ignis/actions/workflows/ci.yaml/badge.svg
+[ci-url]: https://github.com/Kokbo/ha-app-ignis/actions/workflows/ci.yaml
+[version-badge]: https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2FKokbo%2Fha-app-ignis%2Fmain%2Fignis%2Fconfig.yaml&query=%24.version&label=ignis
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
