@@ -12,8 +12,9 @@ on:
 # No permissions by default; each job asks only for what it needs.
 permissions: {}
 
+# Shared with "Release dependency updates": both push version bumps to main.
 concurrency:
-  group: update-ignis
+  group: release-main
   cancel-in-progress: false
 
 jobs:

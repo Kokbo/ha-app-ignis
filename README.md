@@ -44,6 +44,18 @@ To update by hand:
 3. Push. CI builds both architectures; the build fails if the upstream entrypoint
    changed in a way the app's patch no longer matches.
 
+## Dependency updates
+
+Renovate keeps the other dependencies current, such as `obsidian-headless` in the
+Dockerfile and the GitHub Actions. Home Assistant only rebuilds the app when its version
+changes, so when a Renovate pull request that changes `ignis/` is merged, the **Release
+dependency updates** workflow bumps the version and adds a changelog entry.
+
+Those versions add a fourth number to the Ignis version: `0.9.0` → `0.9.0.1` →
+`0.9.0.2`, and the next Ignis release goes back to a plain version (`0.9.1`). Home
+Assistant orders them correctly. Don't use a suffix like `0.9.0-1`: that counts as a
+pre-release, older than `0.9.0`.
+
 ## Repository layout
 
 ```
